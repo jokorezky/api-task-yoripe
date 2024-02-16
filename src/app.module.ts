@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './middleware/jwt-auth.guard';
-// import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [

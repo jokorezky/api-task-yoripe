@@ -34,6 +34,21 @@ export class AuthService {
         return await this.userModel.findById((await user)._id);
     }
 
+    async verify(token: string): Promise<any> {
+        try {
+            const tokenWithoutBearer = token.replace('Bearer ', '');
+            const userResult: any = await this.jwtService.verifyAsync(
+                tokenWithoutBearer,
+                {
+                    secret: this.configService.JWT_SECRET,
+                },
+            );
+            return userResult;
+        } catch (e) {
+            throw e;
+        }
+    }
+
     async login(loginUserDto: LoginUserDto): Promise<{ token: string }> {
         const { email, password } = loginUserDto;
         const user = await this.userModel.findOne({ email });
@@ -50,7 +65,7 @@ export class AuthService {
         if (!isMatch) {
             throw new Error('Invalid credentials');
         }
-
+        
         const token = await this.generateToken(user);
         return { token };
     }
