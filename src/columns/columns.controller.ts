@@ -13,7 +13,6 @@ export class ColumnsController {
     @UseGuards(JwtAuthGuard)
     @Get()
     findAll(): Promise<Column[]> {
-        console.log("masuk")
         return this.columnsService.findAll();
     }
 
