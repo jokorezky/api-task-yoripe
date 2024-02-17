@@ -37,6 +37,7 @@ export class AuthService {
     async verify(token: string): Promise<any> {
         try {
             const tokenWithoutBearer = token.replace('Bearer ', '');
+            console.log("tokenWithoutBearer", tokenWithoutBearer)
             const userResult: any = await this.jwtService.verifyAsync(
                 tokenWithoutBearer,
                 {
