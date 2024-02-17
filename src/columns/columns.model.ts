@@ -7,12 +7,6 @@ export type ColumnDocument = Column & Document;
 export class Column {
   @Prop()
   title: string;
-
-  @Prop()
-  sequence: number;
-
-  @Prop({ type: Types.ObjectId, ref: 'Board' }) // Menambahkan relasi ke model Board
-  boardId: Types.ObjectId;
 }
 
 export const ColumnSchema = SchemaFactory.createForClass(Column);

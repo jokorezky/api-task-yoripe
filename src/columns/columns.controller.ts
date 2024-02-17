@@ -28,9 +28,7 @@ export class ColumnsController {
     @Post()
     create(
         @Body() createColumnDto: CreateColumnDto,
-        @Headers('boardId') boardId: string,
     ): Promise<Column> {
-        createColumnDto.boardId = boardId;
         return this.columnsService.create(createColumnDto);
     }
 

@@ -17,12 +17,7 @@ export class ColumnsService {
     }
 
     async create(createColumnDto: CreateColumnDto): Promise<Column> {
-        const existingColumns = await this.columnModel.find().sort({ sequence: 'desc' }).limit(1);
-        const lastSequence = existingColumns.length > 0 ? existingColumns[0].sequence : 0;
-        const createdColumn = new this.columnModel({
-            ...createColumnDto,
-            sequence: lastSequence + 1,
-        });
+        const createdColumn = new this.columnModel(createColumnDto);
         return createdColumn.save();
     }
 
