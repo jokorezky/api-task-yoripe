@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Headers } f
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-tasks.dto';
+import { UpdateTaskDto } from './dto/update-tasks.dto';
 import { Task } from './tasks.model';
 import { JwtAuthGuard } from '../middleware/jwt-auth.guard';
 
@@ -19,8 +20,8 @@ export class TasksController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get('taskByBoardId/:boardId/:id')
-    findOne(@Param('id') id: string): Promise<Task | null> {
-        return this.tasksService.findOne(id);
+    findOne(@Param('boardId') boardId: string, @Param('id') id: string): Promise<Task | null> {
+        return this.tasksService.findOne(boardId, id);
     }
 
     @ApiBearerAuth()
@@ -36,8 +37,8 @@ export class TasksController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Put('taskByBoardId/:boardId/:id')
-    update(@Param('id') id: string, @Body() task: Task): Promise<Task | null> {
-        return this.tasksService.update(id, task);
+    update(@Param('boardId') boardId: string, @Param('id') id: string, @Body() task: UpdateTaskDto): Promise<Task[]> {
+        return this.tasksService.update(boardId, id, task);
     }
 
     @ApiBearerAuth()

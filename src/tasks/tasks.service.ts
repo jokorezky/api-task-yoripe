@@ -3,10 +3,26 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Task, TaskDocument } from './tasks.model';
 import { CreateTaskDto } from './dto/create-tasks.dto';
+import { UpdateTaskDto } from './dto/update-tasks.dto';
+import { Status } from "../enums/status.enum"
 
 @Injectable()
 export class TasksService {
     constructor(@InjectModel(Task.name) private taskModel: Model<TaskDocument>) { }
+
+    private mapStringToStatus(statusString: string): Status {
+        switch (statusString) {
+            case 'Todo':
+                return Status.Todo;
+            case 'Doing':
+                return Status.Doing;
+            case 'Done':
+                return Status.Done;
+            default:
+                // Handle unknown status or return a default value
+                return Status.Todo;
+        }
+    }
 
     async findAll(boardId: string): Promise<any[]> {
         const groupedTasks = await this.taskModel.aggregate([
@@ -36,7 +52,7 @@ export class TasksService {
         return finalResult;
     }
 
-    async findOne(id: string): Promise<Task | null> {
+    async findOne(boardId: string, id: string): Promise<Task | null> {
         return this.taskModel.findById(id).exec();
     }
 
@@ -51,8 +67,11 @@ export class TasksService {
         return createdTask.save();
     }
 
-    async update(id: string, task: Task): Promise<Task | null> {
-        return this.taskModel.findByIdAndUpdate(id, task, { new: true }).exec();
+    async update(boardId: string, id: string, task: UpdateTaskDto): Promise<any[]> {
+        const statusString = task.status;
+        task.status = Status[statusString];
+        await this.taskModel.findByIdAndUpdate(id, task).exec();
+        return await this.findAll(boardId);
     }
 
     async remove(id: string): Promise<Task | null> {
