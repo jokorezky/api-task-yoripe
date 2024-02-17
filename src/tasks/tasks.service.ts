@@ -8,8 +8,32 @@ import { CreateTaskDto } from './dto/create-tasks.dto';
 export class TasksService {
     constructor(@InjectModel(Task.name) private taskModel: Model<TaskDocument>) { }
 
-    async findAll(boardId: string): Promise<Task[]> {
-        return this.taskModel.find({ boardId }).exec();
+    async findAll(boardId: string): Promise<any[]> {
+        const groupedTasks = await this.taskModel.aggregate([
+            { $match: { boardId } },
+            {
+                $group: {
+                    _id: "$status",
+                    tasks: { $push: "$$ROOT" }
+                }
+            },
+            {
+                $sort: {
+                    _id: 1
+                }
+            }
+        ]).exec();
+
+        const desiredStatus = ['Todo', 'Doing', 'Done'];
+        const finalResult: any[] = desiredStatus.map((status) => {
+            const tasksForStatus = groupedTasks.find((group) => group._id === status)?.tasks || [];
+            return {
+                _id: status,
+                tasks: tasksForStatus
+            };
+        });
+
+        return finalResult;
     }
 
     async findOne(id: string): Promise<Task | null> {

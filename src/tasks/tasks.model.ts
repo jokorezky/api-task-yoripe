@@ -16,7 +16,7 @@ export class Task {
   @Prop()
   sequence: number;
 
-  @Prop({ enum: Priority, default: Priority.Medium })
+  @Prop({ enum: Priority, default: Priority.Low })
   priority: Priority;
 
   @Prop({ enum: Status, default: Status.Todo })
