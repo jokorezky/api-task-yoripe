@@ -49,7 +49,7 @@ export class AuthService {
         }
     }
 
-    async login(loginUserDto: LoginUserDto): Promise<{ token: string }> {
+    async login(loginUserDto: LoginUserDto): Promise<{ data: { token: string; email: string; full_name: string } }> {
         const { email, password } = loginUserDto;
         const user = await this.userModel.findOne({ email });
         if (!user) {
@@ -65,9 +65,16 @@ export class AuthService {
         if (!isMatch) {
             throw new Error('Invalid credentials');
         }
-        
+
         const token = await this.generateToken(user);
-        return { token };
+        const { full_name } = user
+        return {
+            data: {
+                token,
+                email,
+                full_name
+            }
+        }
     }
 
     private generateToken(user: CreateUserDto): string {
