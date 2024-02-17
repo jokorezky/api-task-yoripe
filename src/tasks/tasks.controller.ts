@@ -29,8 +29,8 @@ export class TasksController {
     @Post('taskByBoardId/:boardId')
     create(
         @Body() createTaskDto: CreateTaskDto,
-        @Headers('boardId') boardId: string,
-    ): Promise<Task> {
+        @Param('boardId') boardId: string,
+    ): Promise<Task[]> {
         return this.tasksService.create(createTaskDto, boardId);
     }
 
@@ -44,7 +44,7 @@ export class TasksController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Delete('taskByBoardId/:boardId/:id')
-    remove(@Param('id') id: string): Promise<Task | null> {
-        return this.tasksService.remove(id);
+    remove(@Param('boardId') boardId: string, @Param('id') id: string): Promise<Task[]> {
+        return this.tasksService.remove(boardId, id);
     }
 }

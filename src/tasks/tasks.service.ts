@@ -56,7 +56,7 @@ export class TasksService {
         return this.taskModel.findById(id).exec();
     }
 
-    async create(createTaskDto: CreateTaskDto, boardId: string): Promise<Task> {
+    async create(createTaskDto: CreateTaskDto, boardId: string): Promise<Task[]> {
         const existingTasks = await this.taskModel.find().sort({ sequence: 'desc' }).limit(1);
         const lastSequence = existingTasks.length > 0 ? existingTasks[0].sequence : 0;
         const createdTask = new this.taskModel({
@@ -64,17 +64,19 @@ export class TasksService {
             boardId,
             sequence: lastSequence + 1,
         });
-        return createdTask.save();
+        createdTask.save();
+        return await this.findAll(boardId);
     }
 
-    async update(boardId: string, id: string, task: UpdateTaskDto): Promise<any[]> {
+    async update(boardId: string, id: string, task: UpdateTaskDto): Promise<Task[]> {
         const statusString = task.status;
         task.status = Status[statusString];
         await this.taskModel.findByIdAndUpdate(id, task).exec();
         return await this.findAll(boardId);
     }
 
-    async remove(id: string): Promise<Task | null> {
-        return this.taskModel.findByIdAndDelete(id).exec();
+    async remove(boardId: string, id: string): Promise<Task[]> {
+        await this.taskModel.findByIdAndDelete(id).exec();
+        return await this.findAll(boardId);
     }
 }
