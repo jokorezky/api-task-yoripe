@@ -5,6 +5,7 @@ import { CreateTaskDto } from './dto/create-tasks.dto';
 import { UpdateTaskDto } from './dto/update-tasks.dto';
 import { Task } from './tasks.model';
 import { JwtAuthGuard } from '../middleware/jwt-auth.guard';
+import { CurrentUser } from "../utils/current-user.context"
 
 @Controller('tasks')
 export class TasksController {
@@ -30,8 +31,9 @@ export class TasksController {
     create(
         @Body() createTaskDto: CreateTaskDto,
         @Param('boardId') boardId: string,
+        @CurrentUser() user: { userId: string },
     ): Promise<Task[]> {
-        return this.tasksService.create(createTaskDto, boardId);
+        return this.tasksService.create(createTaskDto, boardId, user);
     }
 
     @ApiBearerAuth()

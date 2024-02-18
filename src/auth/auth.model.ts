@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, model } from 'mongoose';
 
 @Schema()
 export class User extends Document {
@@ -14,3 +14,4 @@ export class User extends Document {
 }
 
 export const AuthModel = SchemaFactory.createForClass(User);
+export const AuthuserModel = model<User>('User', AuthModel);

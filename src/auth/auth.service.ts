@@ -65,7 +65,7 @@ export class AuthService {
         if (!isMatch) {
             throw new Error('Invalid credentials');
         }
-
+        
         const token = await this.generateToken(user);
         const { full_name } = user
         return {
@@ -77,13 +77,13 @@ export class AuthService {
         }
     }
 
-    private generateToken(user: CreateUserDto): string {
-        const payload = { sub: user.email };
+    private generateToken(user: User): string {
+        const payload = { sub: user.email, userId: user._id };
         return this.jwtService.sign(payload);
     }
 
     async getAllUsers(): Promise<User[]> {
-        return this.userModel.find().exec();
+        return this.userModel.find().select('-password').exec();
     }
 
     async getUserByEmail(email: string): Promise<User | null> {
