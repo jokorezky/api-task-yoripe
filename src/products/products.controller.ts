@@ -45,6 +45,7 @@ export class ProductsController {
     @Put(':id')
     @UseInterceptors(FileFieldsInterceptor([
         { name: 'images', maxCount: 5 },
+        
     ]))
     async updateProduct(@Param('id') id: string, @Body() updateProductDto: any, @UploadedFiles() files: any): Promise<Product> {
         let imageUrlsFromFile = null;
