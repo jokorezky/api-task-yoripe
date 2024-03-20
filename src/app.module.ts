@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './middleware/jwt-auth.guard';
 import { BoardssModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { TasksModule } from './tasks/tasks.module';
     MongooseModule.forRoot(process.env.MONGODB_URI),
     AuthModule,
     BoardssModule,
-    TasksModule
+    TasksModule,
+    ProductsModule
   ],
   providers: [JwtAuthGuard],
 })
