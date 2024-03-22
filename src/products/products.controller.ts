@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UseI
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './products.service';
-import { PaginationDto } from "./dto/PaginationDto.dto";
+import { PaginationsDto } from "../dto/Pagination.dto";
 import { Product } from './products.model';
 import { JwtAuthGuard } from '../middleware/jwt-auth.guard';
 
@@ -13,7 +13,7 @@ export class ProductsController {
     @ApiBearerAuth() // Anotasi untuk menggunakan JWT Bearer Authentication
     @UseGuards(JwtAuthGuard) // Menggunakan guard JWT untuk mengamankan endpoint
     @Get()
-    async findAll(@Query() query: PaginationDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
+    async findAll(@Query() query: PaginationsDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
         const { total, totalPage, data } = await this.productService.findAll(query);
         return { total, totalPage, data };
     }

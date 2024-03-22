@@ -7,6 +7,7 @@ import { JwtAuthGuard } from './middleware/jwt-auth.guard';
 import { BoardssModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ProductsModule } from './products/products.module';
+import { CategoryModule } from './categories/category.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { ProductsModule } from './products/products.module';
     AuthModule,
     BoardssModule,
     TasksModule,
-    ProductsModule
+    ProductsModule,
+    CategoryModule
   ],
   providers: [JwtAuthGuard],
 })

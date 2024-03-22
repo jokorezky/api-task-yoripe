@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsInt, Min } from 'class-validator';
 
-export class PaginationDto {
+export class PaginationsDto {
     @ApiProperty({ description: 'Halaman', default: 1, required: false })
     @IsOptional()
     page?: number = 1;

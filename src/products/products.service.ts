@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginationDto } from "./dto/PaginationDto.dto";
+import { PaginationsDto } from "../dto/Pagination.dto";
 import { Product, ProductDocument } from './products.model';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -24,21 +24,7 @@ export class ProductService {
         });
     }
 
-    // async findAll(query: PaginationDto): Promise<Product[]> {
-    //     const { page, limit, search } = query;
-    //     const skip = (page - 1) * limit;
-    //     const filters = search ? { name: { $regex: new RegExp(search, 'i') } } : {};
-
-    //     return this.productModel.find(filters)
-    //         .skip(skip)
-    //         .limit(limit)
-    //         .exec();
-    // }
-    // async findOne(id: string): Promise<Product | null> {
-    //     return this.productModel.findById(id).exec();
-    // }
-
-    async findAll(query: PaginationDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
+    async findAll(query: PaginationsDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
         const { page, limit, search } = query;
         const skip = (page - 1) * limit;
         const filters = search ? { name: { $regex: new RegExp(search, 'i') } } : {};
@@ -109,28 +95,28 @@ export class ProductService {
         // Update other fields
         product.name = updateProductDto.name || product.name;
         product.normalPrice = updateProductDto.normalPrice || product.normalPrice;
-        product.promoPrice = updateProductDto.promoPrice || product.promoPrice;
+        product.promoPrice = updateProductDto.promoPrice || 0;
         product.category = updateProductDto.category || product.category;
         product.description = updateProductDto.description || product.description;
-        product.lazada = updateProductDto.lazada || product.lazada;
-        product.shopee = updateProductDto.shopee || product.shopee;
-        product.tokopedia = updateProductDto.tokopedia || product.tokopedia;
-        product.blibli = updateProductDto.blibli || product.blibli;
-        product.bukalapak = updateProductDto.bukalapak || product.bukalapak;
-        product.linkLazada = updateProductDto.linkLazada || product.linkLazada;
-        product.linkShopee = updateProductDto.linkShopee || product.linkShopee;
-        product.linkTokopedia = updateProductDto.linkTokopedia || product.linkTokopedia;
-        product.linkBlibli = updateProductDto.linkBlibli || product.linkBlibli;
-        product.linkBukalapak = updateProductDto.linkBukalapak || product.linkBukalapak;
+        product.lazada = updateProductDto.lazada || false;
+        product.shopee = updateProductDto.shopee || false;
+        product.tokopedia = updateProductDto.tokopedia || false;
+        product.blibli = updateProductDto.blibli || false;
+        product.bukalapak = updateProductDto.bukalapak || false;
+        product.linkLazada = updateProductDto.linkLazada || "";
+        product.linkShopee = updateProductDto.linkShopee || "";
+        product.linkTokopedia = updateProductDto.linkTokopedia || "";
+        product.linkBlibli = updateProductDto.linkBlibli || "";
+        product.linkBukalapak = updateProductDto.linkBukalapak || "";
 
         // Save and return updated product
         return product.save();
     }
 
-    async remove(id_: string): Promise<boolean> {
-        const product = await this.productModel.findByIdAndDelete(id_).exec();
+    async remove(_id: string): Promise<boolean> {
+        const product = await this.productModel.findByIdAndDelete(new ObjectId(_id) as any).exec();
         if (!product) {
-            throw new NotFoundException(`Product with ID ${id_} not found`);
+            throw new NotFoundException(`Product with ID ${_id} not found`);
         }
         return true;
     }
