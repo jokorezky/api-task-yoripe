@@ -8,6 +8,7 @@ import { BoardssModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ProductsModule } from './products/products.module';
 import { CategoryModule } from './categories/category.module';
+import { BrandsModule } from './brands/brands.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { CategoryModule } from './categories/category.module';
     BoardssModule,
     TasksModule,
     ProductsModule,
-    CategoryModule
+    CategoryModule,
+    BrandsModule
   ],
   providers: [JwtAuthGuard],
 })
