@@ -7,6 +7,9 @@ export type CategoryDocument = Category & Document;
 export class Category {
     @Prop({ required: true })
     name: string;
+
+    @Prop({ required: true })
+    slug: string;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

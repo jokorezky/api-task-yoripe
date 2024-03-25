@@ -14,6 +14,18 @@ export class Product {
   name: string;
 
   @Prop()
+  @IsString()
+  slug: string;
+
+  @Prop()
+  @IsString()
+  userId: string;
+
+  @Prop()
+  @IsString()
+  companyId: string;
+
+  @Prop()
   @IsNumber()
   promoPrice: number;
 

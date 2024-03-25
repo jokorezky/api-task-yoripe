@@ -6,7 +6,9 @@ import { ConfigService } from '../config/config.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from './auth.model';
+import { PaginationsDto } from "../dto/Pagination.dto";
 import * as argon2 from 'argon2';
+import { RoleType } from "../types/role.type"
 
 @Injectable()
 export class AuthService {
@@ -16,7 +18,7 @@ export class AuthService {
         private readonly jwtService: JwtService) { }
 
     async createUser(createUserDto: CreateUserDto): Promise<User> {
-        const { email, password, full_name } = createUserDto;
+        const { email, password, full_name, roles } = createUserDto;
         const emailExist = await this.getUserByEmail(email);
         if (emailExist) {
             throw new Error('Email is Already Registered');
@@ -29,6 +31,7 @@ export class AuthService {
             password: hash,
             email,
             full_name,
+            roles
         });
         await user.save();
         return await this.userModel.findById((await user)._id);
@@ -65,7 +68,7 @@ export class AuthService {
         if (!isMatch) {
             throw new Error('Invalid credentials');
         }
-        
+
         const token = await this.generateToken(user);
         const { full_name } = user
         return {
@@ -78,12 +81,37 @@ export class AuthService {
     }
 
     private generateToken(user: User): string {
-        const payload = { sub: user.email, userId: user._id };
+        const payload = { sub: user.email, userId: user._id, companyId: user.companyId || "" };
         return this.jwtService.sign(payload);
     }
 
     async getAllUsers(): Promise<User[]> {
         return this.userModel.find().select('-password').exec();
+    }
+
+    async findAll(query: PaginationsDto, roles: RoleType): Promise<{ total: number; totalPage: number; data: User[] }> {
+        const { page, limit, search } = query;
+        const skip = (page - 1) * limit;
+
+        let filters: any = search ? { name: { $regex: new RegExp(search, 'i') } } : {};
+
+        if (roles) {
+            filters = { ...filters, roles };
+        }
+
+        console.log("filters", filters)
+
+        const total = await this.userModel.countDocuments(filters).exec();
+        const data = await this.userModel.find(filters)
+            .skip(skip)
+            .limit(limit)
+            .exec();
+
+        return {
+            total,
+            totalPage: Math.ceil(total / limit),
+            data,
+        };
     }
 
     async getUserByEmail(email: string): Promise<User | null> {

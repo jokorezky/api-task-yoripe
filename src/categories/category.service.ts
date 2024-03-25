@@ -36,7 +36,8 @@ export class CategoryService {
     }
 
     async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-        const createdCategory = new this.categoryModel(createCategoryDto);
+        const slug = createCategoryDto.name.replace(/[^\w\s]/gi, '').replace(/\s+/g, '-').toLowerCase();
+        const createdCategory = new this.categoryModel({ ...createCategoryDto, slug });
         return createdCategory.save();
     }
 

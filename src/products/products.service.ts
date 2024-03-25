@@ -69,13 +69,16 @@ export class ProductService {
         return imageUrls;
     }
 
-    async createProduct(createProductDto: CreateProductDto): Promise<Product> {
+    async createProduct(createProductDto: CreateProductDto, user): Promise<Product> {
         const objectId = new Types.ObjectId();
+        const slug = createProductDto.name.replace(/[^\w\s]/gi, '');
         const createdProduct = new this.productModel({
             _id: objectId,
             ...createProductDto,
+            slug: `${slug.replace(/\s+/g, '-').toLowerCase()}.html`,
+            userId: user.userId,
+            companyId: user.companyId
         });
-
         // Save the product document to the database
         return createdProduct.save();
     }

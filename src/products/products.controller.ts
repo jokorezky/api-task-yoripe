@@ -4,10 +4,12 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './products.service';
 import { PaginationsDto } from "../dto/Pagination.dto";
 import { Product } from './products.model';
+import { User } from '../auth/auth.model';
 import { JwtAuthGuard } from '../middleware/jwt-auth.guard';
 import { RolesGuard } from '../middleware/role.guard';
 import { Roles } from "../utils/roles.decorator";
 import { RoleType } from "../types/role.type";
+import { CurrentUser } from '../auth/current-user.context';
 
 @Controller('products')
 export class ProductsController {
@@ -17,7 +19,9 @@ export class ProductsController {
     @UseGuards(RolesGuard)
     @Roles(RoleType.ADMIN_OWNER)
     @Get()
-    async findAll(@Query() query: PaginationsDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
+    async findAll(
+        @Query() query: PaginationsDto
+    ): Promise<{ total: number; totalPage: number; data: Product[] }> {
         const { total, totalPage, data } = await this.productService.findAll(query);
         return { total, totalPage, data };
     }
@@ -36,13 +40,16 @@ export class ProductsController {
     @UseInterceptors(FileFieldsInterceptor([
         { name: 'images', maxCount: 5 },
     ]))
-    async createProduct(@Body() createProductDto: any, @UploadedFiles() files: any) {
+    async createProduct(
+        @Body() createProductDto: any, @UploadedFiles() files: any,
+        @CurrentUser() user: User
+    ) {
         // Memproses gambar dan mengunggahnya ke S3
         const imageUrls = await this.productService.uploadImagesToS3(files.images);
         // Menambahkan URL gambar ke DTO
         createProductDto.images = imageUrls;
         // Membuat produk
-        return this.productService.createProduct(createProductDto);
+        return this.productService.createProduct(createProductDto, user);
     }
 
     @ApiBearerAuth()
