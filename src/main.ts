@@ -11,7 +11,7 @@ async function bootstrap() {
   app.enableCors();
 
   const config = new DocumentBuilder()
-    .setTitle('YoRipe Fullstack Assignment')
+    .setTitle('Ecommerce Batam')
     .setDescription('Joko Auditis Miftahul Rezky - https://github.com/jokorezky')
     .setVersion('1.0')
     .addBearerAuth()

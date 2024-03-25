@@ -25,6 +25,11 @@ export class UpdateProductDto {
     @IsString()
     category?: string;
 
+    @ApiPropertyOptional({ title: 'Category', description: 'Category of the product' })
+    @IsOptional()
+    @IsString()
+    brand?: string;
+
     @ApiPropertyOptional({ title: 'Description', description: 'Description of the product' })
     @IsOptional()
     @IsString()

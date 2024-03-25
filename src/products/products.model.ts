@@ -27,6 +27,10 @@ export class Product {
 
   @Prop()
   @IsString()
+  brand: string;
+
+  @Prop()
+  @IsString()
   description: string;
 
   @Prop()

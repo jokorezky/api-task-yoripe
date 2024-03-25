@@ -5,13 +5,17 @@ import { ProductService } from './products.service';
 import { PaginationsDto } from "../dto/Pagination.dto";
 import { Product } from './products.model';
 import { JwtAuthGuard } from '../middleware/jwt-auth.guard';
+import { RolesGuard } from '../middleware/role.guard';
+import { Roles } from "../utils/roles.decorator";
+import { RoleType } from "../types/role.type";
 
 @Controller('products')
 export class ProductsController {
     constructor(private readonly productService: ProductService) { }
 
-    @ApiBearerAuth() // Anotasi untuk menggunakan JWT Bearer Authentication
-    @UseGuards(JwtAuthGuard) // Menggunakan guard JWT untuk mengamankan endpoint
+    @ApiBearerAuth()
+    @UseGuards(RolesGuard)
+    @Roles(RoleType.ADMIN_OWNER)
     @Get()
     async findAll(@Query() query: PaginationsDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
         const { total, totalPage, data } = await this.productService.findAll(query);
@@ -26,7 +30,8 @@ export class ProductsController {
     }
 
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(RolesGuard)
+    @Roles(RoleType.ADMIN_OWNER)
     @Post()
     @UseInterceptors(FileFieldsInterceptor([
         { name: 'images', maxCount: 5 },
@@ -41,11 +46,12 @@ export class ProductsController {
     }
 
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(RolesGuard)
+    @Roles(RoleType.ADMIN_OWNER)
     @Put(':id')
     @UseInterceptors(FileFieldsInterceptor([
         { name: 'images', maxCount: 5 },
-        
+
     ]))
     async updateProduct(@Param('id') id: string, @Body() updateProductDto: any, @UploadedFiles() files: any): Promise<Product> {
         let imageUrlsFromFile = null;
@@ -67,14 +73,16 @@ export class ProductsController {
         return this.productService.updateProduct(id, updateProductDto, mergedImageUrls);
     }
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(RolesGuard)
+    @Roles(RoleType.ADMIN_OWNER)
     @Delete(':id')
     async remove(@Param('id') id: string): Promise<boolean> {
         return this.productService.remove(id);
     }
 
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(RolesGuard)
+    @Roles(RoleType.ADMIN_OWNER)
     @Delete(':id/images/:imageUrl')
     async deleteProductImage(@Param('id') id: string, @Param('imageUrl') imageUrl: string) {
         return this.productService.deleteProductImage(id, imageUrl);

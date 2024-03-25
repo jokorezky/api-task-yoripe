@@ -97,6 +97,7 @@ export class ProductService {
         product.normalPrice = updateProductDto.normalPrice || product.normalPrice;
         product.promoPrice = updateProductDto.promoPrice || 0;
         product.category = updateProductDto.category || product.category;
+        product.brand = updateProductDto.brand || product.brand;
         product.description = updateProductDto.description || product.description;
         product.lazada = updateProductDto.lazada || false;
         product.shopee = updateProductDto.shopee || false;

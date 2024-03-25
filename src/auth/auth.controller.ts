@@ -5,11 +5,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from '../middleware/jwt-auth.guard';
 import { User } from './auth.model';
+import { Roles } from "../utils/roles.decorator";
+import { RoleType } from "../types/role.type";
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Roles(RoleType.ADMIN_OWNER)
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.authService.createUser(createUserDto);

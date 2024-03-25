@@ -18,6 +18,10 @@ export class CreateProductDto {
     @IsString()
     category: string;
 
+    @ApiProperty({ title: 'Category', description: 'Brand of the product' })
+    @IsString()
+    brand: string;
+
     @ApiProperty({ title: 'Description', description: 'Description of the product' })
     @IsString()
     description: string;
