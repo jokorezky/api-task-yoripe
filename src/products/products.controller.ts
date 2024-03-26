@@ -16,16 +16,16 @@ import { Public } from '../middleware/auth.middleware';
 export class ProductsController {
     constructor(private readonly productService: ProductService) { }
 
-     // public
-     @Public()
-     @Get("byCategory")
-     async findAllByCategory(
-         @Query() query: PaginationsDto
-     ): Promise<{ total: number; totalPage: number; data: Product[] }> {
-         const { total, totalPage, data } = await this.productService.findAll(query);
-         return { total, totalPage, data };
-     }
-     
+    // public
+    @Public()
+    @Get("byCategory")
+    async findAllByCategory(
+        @Query() query: PaginationsDto
+    ): Promise<{ total: number; totalPage: number; data: Product[] }> {
+        const { total, totalPage, data } = await this.productService.findAll(query);
+        return { total, totalPage, data };
+    }
+
     @ApiBearerAuth()
     @UseGuards(RolesGuard)
     @Roles(RoleType.ADMIN_OWNER)
@@ -107,7 +107,14 @@ export class ProductsController {
         return this.productService.deleteProductImage(id, imageUrl);
     }
 
+    @Public() // Untuk endpoint publik
+    @Get(':category/:slug') // Endpoint untuk mendapatkan produk berdasarkan kategori dan slug
+    async findOneByCategoryAndSlug(
+        @Param('category') category: string,
+        @Param('slug') slug: string
+    ): Promise<Product | null> {
+        return this.productService.findOneByCategoryAndSlug(category, slug);
+    }
 
 
-   
 }

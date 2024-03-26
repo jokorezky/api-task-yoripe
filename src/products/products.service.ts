@@ -162,4 +162,17 @@ export class ProductService {
             throw new Error(`Error deleting product image: ${error.message}`);
         }
     }
+
+    async findOneByCategoryAndSlug(category: string, slug: string): Promise<Product | null> {
+        // Mengembalikan kategori ke format semula dari tanda hubung (-) menjadi spasi dan mengubahnya menjadi huruf kecil
+        const categoryName = category.replace(/-/g, ' ').toLowerCase();
+
+        // Cari produk berdasarkan kategori (case-insensitive) dan slugnya
+        const product = await this.productModel.findOne({ category: { $regex: new RegExp('^' + categoryName + '$', 'i') }, slug }).exec();
+        if (!product) {
+            // Jika produk tidak ditemukan, lempar NotFoundException
+            throw new NotFoundException('Product not found');
+        }
+        return product;
+    }
 }
