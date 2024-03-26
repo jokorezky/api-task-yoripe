@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginationsDto } from "../dto/Pagination.dto";
@@ -25,9 +24,14 @@ export class ProductService {
     }
 
     async findAll(query: PaginationsDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
-        const { page, limit, search } = query;
+        const { page, limit, search, category } = query;
         const skip = (page - 1) * limit;
-        const filters = search ? { name: { $regex: new RegExp(search, 'i') } } : {};
+        let filters: any = search ? { name: { $regex: new RegExp(search, 'i') } } : {};
+
+        // Tambahkan filter kategori jika disediakan
+        if (category) {
+            filters.category = category;
+        }
 
         const total = await this.productModel.countDocuments(filters).exec(); // Hitung total dokumen
 
@@ -42,10 +46,9 @@ export class ProductService {
             data,
         };
     }
-
     async findOne(_id: string): Promise<Product | null> {
         try {
-            const product = await this.productModel.findById(new ObjectId(_id) as any);
+            const product = await this.productModel.findById(new Types.ObjectId(_id) as any);
             return product || null;
         } catch (error) {
             // Handle errors, log them, or throw custom exceptions if needed
@@ -70,21 +73,27 @@ export class ProductService {
     }
 
     async createProduct(createProductDto: CreateProductDto, user): Promise<Product> {
+        const existingProduct = await this.productModel.findOne({ $or: [{ name: createProductDto.name }] });
+        if (existingProduct) {
+            throw new Error('Name already exists');
+        }
+
         const objectId = new Types.ObjectId();
         const slug = createProductDto.name.replace(/[^\w\s]/gi, '');
+        console.log("user", user)
         const createdProduct = new this.productModel({
             _id: objectId,
             ...createProductDto,
             slug: `${slug.replace(/\s+/g, '-').toLowerCase()}.html`,
-            userId: user.userId,
-            companyId: user.companyId
+            isInternal: true,
+            createdAt: new Date()
         });
         // Save the product document to the database
         return createdProduct.save();
     }
 
     async updateProduct(id: string, updateProductDto: UpdateProductDto, imageUrls: string[]): Promise<Product> {
-        const product = await this.productModel.findById(new ObjectId(id) as any);
+        const product = await this.productModel.findById(new Types.ObjectId(id) as any);
 
         if (!product) {
             throw new Error('Product not found');
@@ -118,7 +127,7 @@ export class ProductService {
     }
 
     async remove(_id: string): Promise<boolean> {
-        const product = await this.productModel.findByIdAndDelete(new ObjectId(_id) as any).exec();
+        const product = await this.productModel.findByIdAndDelete(new Types.ObjectId(_id) as any).exec();
         if (!product) {
             throw new NotFoundException(`Product with ID ${_id} not found`);
         }
@@ -127,7 +136,7 @@ export class ProductService {
 
     async deleteProductImage(_id: string, imageUrl: string): Promise<Product> {
         try {
-            const product = await this.productModel.findById(new ObjectId(_id) as any);
+            const product = await this.productModel.findById(new Types.ObjectId(_id) as any);
 
             if (!product) {
                 throw new Error('Product not found');

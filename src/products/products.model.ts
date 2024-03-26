@@ -18,12 +18,8 @@ export class Product {
   slug: string;
 
   @Prop()
-  @IsString()
-  userId: string;
-
-  @Prop()
-  @IsString()
-  companyId: string;
+  @IsBoolean()
+  isInternal: boolean;
 
   @Prop()
   @IsNumber()
@@ -93,6 +89,9 @@ export class Product {
   @IsBoolean()
   @IsOptional()
   status?: boolean;
+
+  @Prop({ type: Date, default: Date.now })
+  createdAt: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

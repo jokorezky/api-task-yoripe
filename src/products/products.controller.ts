@@ -10,11 +10,22 @@ import { RolesGuard } from '../middleware/role.guard';
 import { Roles } from "../utils/roles.decorator";
 import { RoleType } from "../types/role.type";
 import { CurrentUser } from '../auth/current-user.context';
+import { Public } from '../middleware/auth.middleware';
 
 @Controller('products')
 export class ProductsController {
     constructor(private readonly productService: ProductService) { }
 
+     // public
+     @Public()
+     @Get("byCategory")
+     async findAllByCategory(
+         @Query() query: PaginationsDto
+     ): Promise<{ total: number; totalPage: number; data: Product[] }> {
+         const { total, totalPage, data } = await this.productService.findAll(query);
+         return { total, totalPage, data };
+     }
+     
     @ApiBearerAuth()
     @UseGuards(RolesGuard)
     @Roles(RoleType.ADMIN_OWNER)
@@ -28,6 +39,7 @@ export class ProductsController {
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
+    @Roles(RoleType.ADMIN_OWNER)
     @Get(':id')
     findOne(@Param('id') id: string): Promise<Product | null> {
         return this.productService.findOne(id);
@@ -94,4 +106,8 @@ export class ProductsController {
     async deleteProductImage(@Param('id') id: string, @Param('imageUrl') imageUrl: string) {
         return this.productService.deleteProductImage(id, imageUrl);
     }
+
+
+
+   
 }

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { Brand, BrandDocument } from './brands.model';
 import { CreateBrandDto, UpdateBrandDto } from './dto/brands.dto';
@@ -31,7 +31,7 @@ export class BrandsService {
     }
 
     async findOne(id: string): Promise<Brand> {
-        return this.brandModel.findById(new ObjectId(id) as any).exec();
+        return this.brandModel.findById(new Types.ObjectId(id) as any).exec();
     }
 
     async create(createBrandDto: CreateBrandDto): Promise<Brand> {
@@ -44,14 +44,14 @@ export class BrandsService {
         updateBrandDto: UpdateBrandDto,
     ): Promise<Brand> {
         return this.brandModel.findByIdAndUpdate(
-            new ObjectId(id) as any,
+            new Types.ObjectId(id) as any,
             updateBrandDto,
             { new: true },
         );
     }
 
     async delete(id: string): Promise<Brand> {
-        const deletedBrand = await this.brandModel.findOneAndDelete({ _id: new ObjectId(id) as any }).exec();
+        const deletedBrand = await this.brandModel.findByIdAndDelete(id).exec();
         if (!deletedBrand) {
             throw new NotFoundException(`Brand with ID ${id} not found`);
         }

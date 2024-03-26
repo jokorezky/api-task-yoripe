@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
+import { Model, Types } from 'mongoose';
 import { Category, CategoryDocument } from './category.model';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { PaginationsDto } from '../dto/Pagination.dto';
@@ -32,7 +31,7 @@ export class CategoryService {
     }
 
     async findOne(id: string): Promise<Category> {
-        return this.categoryModel.findById(new ObjectId(id) as any).exec();
+        return this.categoryModel.findById(new Types.ObjectId(id) as any).exec();
     }
 
     async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
@@ -46,14 +45,14 @@ export class CategoryService {
         updateCategoryDto: UpdateCategoryDto,
     ): Promise<Category> {
         return this.categoryModel.findByIdAndUpdate(
-            new ObjectId(id) as any,
+            new Types.ObjectId(id) as any,
             updateCategoryDto,
             { new: true },
         );
     }
 
     async delete(id: string): Promise<Category> {
-        const deletedCategory = await this.categoryModel.findOneAndDelete({ _id: new ObjectId(id) as any }).exec();
+        const deletedCategory = await this.categoryModel.findByIdAndDelete(id).exec();
         if (!deletedCategory) {
             throw new NotFoundException(`Category with ID ${id} not found`);
         }
