@@ -22,6 +22,7 @@ export class ProductsController {
     async findAllByCategory(
         @Query() query: PaginationsDto
     ): Promise<{ total: number; totalPage: number; data: Product[] }> {
+        query.status = true;
         const { total, totalPage, data } = await this.productService.findAll(query);
         return { total, totalPage, data };
     }

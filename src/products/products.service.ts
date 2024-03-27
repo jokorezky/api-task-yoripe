@@ -24,13 +24,17 @@ export class ProductService {
     }
 
     async findAll(query: PaginationsDto): Promise<{ total: number; totalPage: number; data: Product[] }> {
-        const { page, limit, search, category } = query;
+        const { page, limit, search, category, status } = query;
         const skip = (page - 1) * limit;
         let filters: any = search ? { name: { $regex: new RegExp(search, 'i') } } : {};
 
         // Tambahkan filter kategori jika disediakan
         if (category) {
             filters.category = category;
+        }
+
+        if (status) {
+            filters.status = status
         }
 
         const total = await this.productModel.countDocuments(filters).exec(); // Hitung total dokumen

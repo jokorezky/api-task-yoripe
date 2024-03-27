@@ -17,4 +17,8 @@ export class PaginationsDto {
     @ApiProperty({ description: 'Filter pencarian berdasarkan nama produk', required: false })
     @IsOptional()
     category?: string;
+
+    @ApiProperty({ description: 'Status Product', required: false })
+    @IsOptional()
+    status?: boolean;
 }
